@@ -1,0 +1,38 @@
+version: 0.1.0                                            
+
+name: Deploy a Django app to Azure
+description: A stack to deploy a Django based website to Azure app service               
+
+branding:                                                # stack branding 
+ icon: 'package'
+ color: 'black'
+
+inputs: 
+  - name: DIGITAL_OCEAN_ACCESS_TOKEN
+    description: Enter the DigitalOcean Access Token. 
+    is-secret: true
+    required: true
+    
+configs:
+  repo-metadata:
+    parameters:
+      description: 'NextJS app on Digital Ocean Apps'
+      secrets: 
+        - name: DIGITAL_OCEAN_ACCESS_TOKEN
+          value: ${{inputs.DIGITAL_OCEAN_ACCESS_TOKEN}}
+        - name: CURRENT_REPO
+          value: ${{GITHUB_REPOSITORY}}
+      topics:
+      - nextjs
+      - github-pages
+
+  environments:
+    - name: development
+      parameters:
+        protected-branches: false
+        allowed-branch-rules:
+          - main
+          - releases/*
+
+init:
+  uses: "stack-init.yaml"
