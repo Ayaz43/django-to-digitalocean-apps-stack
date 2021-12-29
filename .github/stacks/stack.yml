@@ -1,7 +1,7 @@
 version: 0.1.0                                            
 
-name: Deploy a Django app to Azure
-description: A stack to deploy a Django based website to Azure app service               
+name: Deploy a Django app to Digital Ocean
+description: A stack to deploy a Django based website to Digital Ocean apps          
 
 branding:                                                # stack branding 
  icon: 'package'
