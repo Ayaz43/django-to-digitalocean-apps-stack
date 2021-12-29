@@ -62,22 +62,10 @@ jobs:
         with:
           name: python-app
           path: .
-      - uses: azure/login@v1
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Azure CLI script
-        uses: azure/CLI@v1
-        if: ${{ github.event.inputs.CREATE_AZURE_WEBAPP == 'yes' }} 
-        with:
-          inlineScript: |
-            az appservice plan create --name ${{ secrets.AZURE_WEBAPP_NAME }}-plan --is-linux --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-            az webapp create --name ${{ secrets.AZURE_WEBAPP_NAME }} --runtime 'PYTHON|3.8' --plan ${{ secrets.AZURE_WEBAPP_NAME }}-plan --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-      - uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          app-settings-json: '[{ "name": "DISABLE_COLLECTSTATIC", "value": "true" }, { "name": "POST_BUILD_COMMAND",  "value": "python manage.py makemigrations && python manage.py migrate" }, { "name": "SCM_DO_BUILD_DURING_DEPLOYMENT", "value": "true" }, { "name": "DJANGO_ENV", "value": "production"}]'
-      - name: Deploy web App using GH Action azure/webapps-deploy
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          token: ${{ secrets.DIGITAL_OCEAN_ACCESS_TOKEN }}
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: doctl apps create --spec config/spec.yaml --wait
